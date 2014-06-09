@@ -1,0 +1,17 @@
+<h2><%= @item[:title] %></h2>
+
+<table>
+    <% items_for_period(sorted_articles(), @item[:year], @item[:month]).group_by { |a| a[:created_at].month }.each do |month, articles| %>
+        <% articles.each do |post| %>
+            <tr>
+                <td class=date>
+                    <time datetime="<%= post[:created_at].strftime('%Y-%m-%d') %>"><%= post[:created_at].strftime('%b %d, %k:%M') %></time>
+                </td>
+                <td>
+                    <%= link_to post[:title], post.path %>
+                    <p class=tags><%= render 'tags_for_item', :item => post %></p>
+                </td>
+            </tr>
+        <% end %>
+    <% end %>
+</table>

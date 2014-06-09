@@ -1,0 +1,33 @@
+<article>
+<h2><%= @item[:title] %></h2>
+
+<h6>
+    Posted on <time datetime="<%= @item[:created_at].strftime('%Y-%m-%d') %>"><%= @item[:created_at].strftime('%B %d, %Y %l:%M %p %Z') %></time>
+    <%= link_to "original", item[:original_url] %>
+</h6>
+<br>
+<%= yield %>
+<div id=tags>
+Tags: <%= render 'tags_for_item' %>
+</div>
+
+<table>
+    <tr>
+        <td id=aprev>
+            <% i = sorted_articles.index{|x| x.path == @item.path} %>
+            <% unless sorted_articles.at(i+1).nil? %>
+                Previous:<br>
+                <%= link_to sorted_articles.at(i+1)[:title], sorted_articles.at(i+1).path %>
+            <% end %>
+        </td>
+        <td id=anext>
+            <% unless sorted_articles.at(i-1).nil? %>
+                Next:<br>
+                <%= link_to sorted_articles.at(i-1)[:title], sorted_articles.at(i-1).path %>
+            <% end %>
+        </td>
+    </tr>
+</table>
+
+<!--%= render '/partials/disqus' %-->
+</article>

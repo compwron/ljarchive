@@ -1,0 +1,9 @@
+---
+Title: Все теги
+---
+<h2>Все теги</h2>
+<ul class="list-unstyled">
+  <% @items.select { |item| item.identifier.match(/^\/tags\/.+/) }.each do |item| %>
+    <li><%= link_to item[:tag], item.path %> (<%= item[:count] %>)</li>
+  <% end %>
+</ul>

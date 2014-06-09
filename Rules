@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+preprocess do
+  items.select { |item| item.identifier.match(/^\/p\/.+/) }.each do |item|
+    item[:kind] ||= 'article' # Required by Nanoc::Helpers::Blogging
+  end
+
+  # Assign a date to all items (not only blog posts) unless they have it already defined.
+  @items.each do |item|
+    if item[:created_at]
+      item[:created_at] = attribute_to_time(item[:created_at])
+    else
+      item[:created_at] = Time.now
+    end
+    if item[:updated_at]
+      item[:updated_at] = attribute_to_time(item[:updated_at])
+    end
+  end
+
+  build_tag_pages(articles())
+  build_archives(sorted_articles())
+
+end
+
+compile '/p/*' do
+  layout 'article'
+  layout 'main'
+end
+
+compile '*' do
+  if ['css', 'js', 'txt'].include?(item[:extension]) || item.binary?
+      # nothing
+  elsif item[:extension] == 'html'
+    layout item[:layout] || 'main'
+  else
+    filter :erb
+    layout item[:layout] || 'main'
+  end
+end
+
+passthrough '/404'
+passthrough '/robots'
+
+route '/sitemap' do
+  '/sitemap.xml'
+end
+
+route '*' do
+  if item[:extension] == 'css'
+    # Write item with identifier /foo/ to /foo.css
+    item.identifier.chop + '.css'
+  elsif item[:extension] == 'js'
+    # Write item with identifier /foo/ to /foo.css
+    item.identifier.chop + '.js'
+  elsif item.binary?
+    # Write item with identifier /foo/ to /foo.ext
+    item.identifier.chop + '.' + item[:extension]
+  else
+    # Write item with identifier /foo/ to /foo/index.html
+    item.identifier + 'index.html'
+  end
+end
+
+layout '*', :erb
